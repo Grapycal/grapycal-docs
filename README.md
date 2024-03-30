@@ -33,6 +33,8 @@ content
 ## Serve the Site Locally
     hugo serve
 
+The page will be at `http://localhost:1313/docs/`. **Note the /docs/ at the end.**
+
 ## Build the Site
     hugo
 

@@ -8,6 +8,11 @@ lastmod: "2024-03-30T14:58:20+08:00"
 draft: false
 toc: true
 ---
+## Setup
+
+1. Install Hugo-extended v0.124 or later
+2. Clone the repository
+3. Run `git submodule update --init --recursive` to clone the theme submodule
 
 ## Directory Structure
 Every section is a directory with an `_index.md` file that defines the section's title.
@@ -37,6 +42,8 @@ content
 
 ## Serve the Site Locally
     hugo serve
+
+The page will be at `http://localhost:1313/docs/`. **Note the /docs/ at the end.**
 
 ## Build the Site
     hugo

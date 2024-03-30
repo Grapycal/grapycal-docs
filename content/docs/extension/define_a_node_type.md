@@ -1,21 +1,183 @@
 ---
+weight: 200
 title: "Define a Node Type"
 date: 2024-03-30T15:34:16+08:00
 draft: false
 toc: true
 ---
 
-All nodes in Grapycal are defined in [extensions](./extension.md).
-
 To define a node type, you need to create a class that extends the
-`FunctionNode`, `SourceNode`, or `Node` class. `FunctionNode` and
+`Node`, `FunctionNode`, or `SourceNode` class. `FunctionNode` and
 `SourceNode` are both subclasses of `Node`, providing higher-level
 interfaces to define nodes.
 
-The source code of
+>💡 The source code of
 [grapycal_builtin](https://github.com/Grapycal/Grapycal/tree/main/extensions/grapycal_builtin)
 contains various concrete examples of node definitions, which would be
 helpful for understanding how to define a node.
+
+
+## Inheriting Node
+
+To give a node type a custom behavior, inherit from the `Node` class and implement the methods you need.
+
+This guide walks through all methods/settings that can be implemented.
+
+### Specify the Category {#specify_the_category}
+
+Each node type must has a category. For example:
+
+```python
+class CounterNode(Node):
+    category = 'demo'
+```
+
+Categories are used to group nodes in the node list UI.
+
+### Implement `build_node()`
+
+The `build_node()` method is called once when a node is created. This is
+where you define the structure of the node, including
+[controls](Control "wikilink"), [ports](Port "wikilink"), and
+[attributes](Attribute "wikilink"). Here's an example:
+
+```python
+class CounterNode(Node):
+    category = 'demo'
+
+    def build_node(self):
+        self.text = self.add_text_control('0')
+        self.button = self.add_button_control('Add')
+```
+
+The above code results in a node with a text field and a button.
+
+Things you can do in `build_node()`:
+
+-   `self.add_text_control`: Add a Text Control to the node.
+-   `self.add_button_control` : Add a Button Control to the node.
+-   `self.add_image_control` : Add an Image Control to the node.
+-   `self.add_in_port` : Add an Port to the node.
+-   `self.add_out_port` : Add an Port to the node.
+-   `self.add_attribute` : Add an Attribute to the node.
+-   `self.expose_attribute` : Expose an attribute to the inspector
+    panel, so it can be edited by the user when the node is selected.
+
+- Set values of the node's inherent attributes to customize the node's appearance.
+    - `self.shape`: can be `'normal'`, `'simple'`, or `'round'`. The default is `'normal'`.
+
+    - `self.label`: the node's label.
+
+    - `self.label_offset`: the vertical offset of the label from the node's
+    center. It's primarily used to adjust the label's position when the node's shape is `'round'`.
+
+### Implement `init_node()`
+
+The `init_node()` method is called every time a node object is
+instantiated. It's used for initialization tasks other than adding
+controls, ports, and attributes. Here's an example:
+
+```python
+class CounterNode(Node):
+    category = 'demo'
+
+    def build_node(self):
+        self.text = self.add_text_control('0')
+        self.button = self.add_button_control('Add')
+
+    def init_node(self):
+        self.i=0
+        self.button.on_click += self.button_clicked
+
+    def button_clicked(self):
+        self.i += 1
+        self.text.set(str(self.i))
+```
+
+With the code above, the number increases every time you press the "Add"
+button:
+
+Things you can do in `init_node()`:
+
+-   initialize variables that will be used in the node
+-   add callbacks to controls or attributes
+
+>⚠️ Do not confuse `init_node()` with `build_node()`. See [Lifecycle of a
+Node](Lifecycle_of_a_Node) for more details.
+
+### Implement `destroy()`
+
+`destroy()` is called when a node is being deleted. Override this method
+to do cleanup tasks such as closing a file or releasing a resource. It's
+mandatory to return `super().destroy()` at the end of the method.
+
+Example usage:
+
+```python
+def destroy(self):
+    self.file.close()
+    return super().destroy()
+```
+
+---
+
+Above are methods related to node creation and deletion.
+Next, let's see the "node event" methods. These methods determins the runtime behavior of the node.
+
+Things you can do in these methods:
+
+-   Get data from input ports.
+-   Push data to output ports.
+-   Do any calculations or operations.
+-   `self.print()`: Print a message to the inspector panel.
+-   `self.run()`: Run a complex custom task. There are 2 advantages to use
+    `self.run(task)` instead of just `task()`:
+    -   If the task raises an exception, the exception will be caught and
+        printed to the inspector panel instead of possibly crashing the
+        whole program.
+    -   The node event methods are possibly called from the UI thread. If
+        the task takes a long time to run, the UI will freeze. `self.run()`
+        will run the task in the background thread (i.e. the runner) to avoid freezing the UI.
+
+
+An example to run a task in the background thread:
+
+```python
+class CnnNode(Node):
+    ...
+
+    def port_activated(self, port: Port): # could be called from UI thread or background thread
+        self.run(self.task)
+
+    def task(self): # will be executed in background thread (runner)
+        x = self.in_port.get_one_data()
+        y = self.cnn.forward(x) # this line may take a long time or raise an exception
+        self.out_port.push_data(y)
+```
+
+### Implement `port_activated()`
+
+Called when an edge on an input port is activated.
+
+### Implement `input_edge_added()`
+
+Called when an edge is added to an input port.
+
+### Implement `input_edge_removed()`
+
+Called when an edge is removed from an input port.
+
+### Implement `output_edge_added()`
+
+Called when an edge is added to an output port.
+
+### Implement `output_edge_removed()`
+
+Called when an edge is removed from an output port.
+
+### Implement `double_click()`
+
+Called when the node is double clicked by an user.
 
 ## Inheriting FunctionNode {#inheriting_functionnode}
 
@@ -78,173 +240,3 @@ To define a `SourceNode`, simply define the following:
 -   Since `SourceNode` is a subclass of `Node`, you can also do
     everything in [Inheriting Node](#inheriting-node) to
     further customize the node.
-
-## Inheriting Node
-
-This guide provides a comprehensive explanation of how to define a node
-type directly from `Node` class.
-
-### Specify the Category {#specify_the_category}
-
-Each node type must has a category. For example:
-
-```python
-class CounterNode(Node):
-    category = 'demo'
-```
-
-Categories are used to group nodes in the node list UI.
-
-### Implement `build_node()`
-
-The `build_node()` method is called once when a node is created. This is
-where you define the structure of the node, including
-[controls](Control "wikilink"), [ports](Port "wikilink"), and
-[attributes](Attribute "wikilink"). Here's an example:
-
-```python
-class CounterNode(Node):
-    category = 'demo'
-
-    def build_node(self):
-        self.text = self.add_text_control('0')
-        self.button = self.add_button_control('Add')
-```
-
-The above code results in a node with a text field and a button, as
-shown below:
-
-Things you can do in `build_node()`:
-
--   `self.add_text_control`: Add a Text Control to the node.
--   `self.add_button_control` : Add a Button Control to the node.
--   `self.add_image_control` : Add an Image Control to the node.
--   `self.add_in_port` : Add an Port to the node.
--   `self.add_out_port` : Add an Port to the node.
--   `self.add_attribute` : Add an Attribute to the node.
--   `self.expose_attribute` : Expose an attribute to the inspector
-    panel, so it can be edited by the user when the node is selected.
-
-    Set values of the node's inherent attributes to customize the node's appearance.
-
-    :\* `self.shape`: can be `'normal'`, `'simple'`, or `'round'`.
-
-    :\* `self.label`: the node's label.
-
-    :\* `self.label_offset`: the offset of the label from the node's
-    center.
-
-### Implement `init_node()`
-
-The `init_node()` method is called every time a node object is
-instantiated. It's used for initialization tasks other than adding
-controls, ports, and attributes. Here's an example:
-
-```python
-class CounterNode(Node):
-    category = 'demo'
-
-    def build_node(self):
-        self.text = self.add_text_control('0')
-        self.button = self.add_button_control('Add')
-
-    def init_node(self):
-        self.i=0
-        self.button.on_click += self.button_clicked
-
-    def button_clicked(self):
-        self.i += 1
-        self.text.set(str(self.i))
-```
-
-With the code above, the number increases every time you press the "Add"
-button:
-
-Things you can do in `init_node()`:
-
--   initialize variables that will be used in the node
--   add callbacks to controls or attributes
-
-Note
-
-Do not confuse `init_node()` with `build_node()`. See [Lifecycle of a
-Node](Lifecycle_of_a_Node "wikilink") for more details.
-
-### Implement `destroy()`
-
-`destroy()` is called when a node is being deleted. Override this method
-to do cleanup tasks such as closing a file or releasing a resource. It's
-mandatory to return `super().destroy()` at the end of the method.
-
-Example usage:
-
-```python
-def destroy(self):
-    self.file.close()
-    return super().destroy()
-```
-
----
-
-We've seen the methods related to node creation and deletion.
-Next, let's see the "node event" methods. These methods are called when
-certain events happen to the node, so the node can interact with the
-graph or the user.
-
-Things you can do in these methods:
-
--   `self.print()`: Print a message to the inspector panel.
--   `self.run()`: Run a complex custom task. There are 2 benefits to use
-    `self.run(task)` instead of just `task()`:
--   If the task raises an exception, the exception will be caught and
-    printed to the inspector panel instead of possibly crashing the
-    whole program.
--   The node event methods are possibly called from the UI thread. If
-    the task takes a long time to run, the UI will freeze. `self.run()`
-    will run the task in the execution thread to avoid freezing the UI.
--   If the task raises an exception, the exception will be caught and
-    printed to the inspector panel instead of possibly crashing the
-    whole program.
--   The node event methods are possibly called from the UI thread. If
-    the task takes a long time to run, the UI will freeze. `self.run()`
-    will run the task in the execution thread to avoid freezing the UI.
-
-
-For example:
-
-```python
-class CnnNode(Node):
-    ...
-
-    def port_activated(self, port: Port): # could be called from UI thread or execution thread
-        self.run(self.task)
-
-    def task(self): # will be called from execution thread no matter where port_activated is called from
-        x = self.in_port.get_one_data()
-        y = self.cnn.forward(x) # this line may take a long time or raise an exception
-        self.out_port.push_data(y)
-```
-
-### Implement `port_activated()`
-
-Called when an edge on an input port is activated.
-
-### Implement `input_edge_added()`
-
-Called when an edge is added to an input port.
-
-### Implement `input_edge_removed()`
-
-Called when an edge is removed from an input port.
-
-### Implement `output_edge_added()`
-
-Called when an edge is added to an output port.
-
-### Implement `output_edge_removed()`
-
-Called when an edge is removed from an output port.
-
-### Implement `double_click()`
-
-Called when the node is double clicked by an user.

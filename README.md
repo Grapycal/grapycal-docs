@@ -1,4 +1,4 @@
-## Pre-requisites
+## Setup
 
 1. Install Hugo-extended v0.124 or later
 2. Clone the repository

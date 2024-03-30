@@ -1,11 +1,11 @@
 ---
-title: "Write an Extension"
+title: "Develop an Extension"
 date: 2024-03-30T16:33:47+08:00
 draft: false
-weight: 10
+weight: 100
 ---
 
-Here is a brief walkthrough of how to create an extension. For more details about defining nodes, see [Define a Node Type](./define_a_node_type).
+Here is a step-by-step guide to creating and developing an extension.
 
 ## Create an Extension
 
@@ -19,7 +19,7 @@ class TestNode(Node):
     category = 'test'
 ```
 
-That's it! You have created an extension with a node type `TestNode` in the category `test`.
+It's now an extension with a node type `TestNode`.
 
 ## Import the Extension
 
@@ -61,3 +61,5 @@ Now, the `TestNode` has an input port `number` and an output port `isEven`. When
 ## Unimport the Extension
 
 To unimport the extension from the workspace, there must be no nodes from the extension in the workspace. Delete the `TestNode` from the workspace and type `/unimport grapycal_uwu` in the GUI.
+
+For more details about defining nodes, see [Define a Node Type](./define_a_node_type).

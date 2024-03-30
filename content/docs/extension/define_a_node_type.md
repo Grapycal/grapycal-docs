@@ -37,9 +37,10 @@ Categories are used to group nodes in the node list UI.
 ### Implement `build_node()`
 
 The `build_node()` method is called once when a node is created. This is
-where you define the structure of the node, including
-[controls](Control "wikilink"), [ports](Port "wikilink"), and
-[attributes](Attribute "wikilink"). Here's an example:
+where you define the structure of the node, i.e.
+[controls](../node/node#controls),
+[ports](../node/node#ports), and
+[attributes](../node/node#attributes). Here's an example:
 
 ```python
 class CounterNode(Node):
@@ -103,7 +104,7 @@ Things you can do in `init_node()`:
 -   add callbacks to controls or attributes
 
 >⚠️ Do not confuse `init_node()` with `build_node()`. See [Lifecycle of a
-Node](Lifecycle_of_a_Node) for more details.
+Node](../node/Lifecycle_of_a_Node) for more details.
 
 ### Implement `destroy()`
 

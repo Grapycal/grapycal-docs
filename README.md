@@ -1,6 +1,8 @@
 ## Pre-requisites
 
 1. Install Hugo-extended v0.124 or later
+2. Clone the repository
+3. Run `git submodule update --init --recursive` to clone the theme submodule
 
 ## Directory Structure
 Every section is a directory with an `_index.md` file that defines the section's title.

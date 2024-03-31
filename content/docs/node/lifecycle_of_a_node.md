@@ -13,7 +13,7 @@ This document describes how nodes are created, deleted, restored, updated, saved
 
 In case you're overwhelmed by reading this page, just read the [conclusion](#conclusion).
 
-![Image](https://i.imgur.com/I0fMMjP.png)
+![Image](https://i.imgur.com/QA5umIW.png)
 
 https://excalidraw.com/#json=UUIVcXygC4-7GRovE2Uxw,8WvXvCo43xdHG8PScqLmmA
 

@@ -9,7 +9,7 @@ draft: false
 toc: true
 ---
 
-An extension is a Python module used to define [nodes](./define_a_node_type) and [commands](./define_a_command).
+An extension is a Python module defining [nodes](./define_a_node_type) and [commands](./define_a_command).
 
 Each extension makes Grapycal avaliable in a specific domain, such as image processing and deep learning.
 
@@ -30,11 +30,9 @@ class Node2(Node):
      ...
 ```
 
-When the extension is improted, Grapycal will automatically detect the node types defined in the module and make them available in the node library.
-
 ### Standard Extension Format
 
-The standard way is to define an extension class that inherits from `Extension` and lists the node types it contains. The advantage of this approach is that it 
+The standard way is to define an extension class that inherits from `Extension`. The advantage of this approach is that it 
 
 - explicitly defines which node types are included in the extension
 - allows you to [define commands](./define_a_command)

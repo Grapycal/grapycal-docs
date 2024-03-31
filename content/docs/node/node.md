@@ -89,7 +89,7 @@ To expose an attribute to the inspector, call `expose_attribute()` in the `build
 ```python
 class CounterNode(Node):
     def build_node(self):
-        self.count_topic = self.add_attribute('count',StringTopic, value=0)
+        self.count_topic = self.add_attribute('count',StringTopic, init_value=0)
         self.expose_attribute(self.count_topic, editor_type='text', label='Count')
 ```
 

@@ -13,20 +13,20 @@ toc: true
 
 2. Clone the repository:
 
-```bash
-git clone git@github.com:Grapycal/GrapycalPrivate.git
-cd GrapycalPrivate
-git checkout dev
-```
+    ```bash
+    git clone git@github.com:Grapycal/GrapycalPrivate.git
+    cd GrapycalPrivate
+    git checkout dev
+    ```
 
 3. Install dependencies:
 
-```bash
-scripts/dev_setup.sh
-```
+    ```bash
+    scripts/dev_setup.sh
+    ```
 
 4. Run the development server:
 
-```bash
-scripts/dev.sh
-```
+    ```bash
+    scripts/dev.sh
+    ```
